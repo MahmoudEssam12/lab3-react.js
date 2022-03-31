@@ -15,8 +15,6 @@ function MovieDetails() {
     getProductDetails(params.id + process.env.REACT_APP_APIKEY)
       .then((res) => {
         setMovie(res.data);
-        console.log("data", res.data);
-        console.log("movie", movie);
       })
       .catch((err) => console.log(err));
   }, [params.id]);
