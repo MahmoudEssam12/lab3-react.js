@@ -11,13 +11,17 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import IconButton from "@mui/material/IconButton";
 import { useDispatch, useSelector } from "react-redux";
 import { setFavourit, removeFavourit } from "../store/actions/favourit";
-function MovieCard({ movie }) {
-  const favMovies = useSelector((state) => state.favItems);
+function MovieCard({ movie, faved }) {
+  const favMovies = useSelector((state) => state.favourite.favItems);
   const dispatch = useDispatch();
+
   let likedMovie = favMovies.includes(movie);
+
   const addToFavourit = () => {
     dispatch(setFavourit(movie));
+    faved();
   };
+
   const removeFromFavourit = () => {
     dispatch(removeFavourit(movie));
   };

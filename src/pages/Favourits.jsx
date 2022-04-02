@@ -6,9 +6,12 @@ import Typography from "@mui/material/Typography";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { useSelector } from "react-redux";
 import MovieCard from "../components/MovieCard";
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
+import { Link } from "react-router-dom";
 
 function Favourits() {
-  const favMovies = useSelector((state) => state);
+  const favMovies = useSelector((state) => state.favourite);
 
   console.log(favMovies);
   return (
@@ -35,7 +38,8 @@ function Favourits() {
           sx={{
             display: "grid",
             gap: 2,
-            gridTemplateColumns: "repeat(3, 1fr)",
+            gridTemplateColumns:
+              favMovies.favItems.length > 0 ? "repeat(3,1fr)" : "repeat(1,1fr)",
           }}
         >
           {favMovies.favItems.length > 0 ? (
@@ -43,12 +47,13 @@ function Favourits() {
               <MovieCard movie={movie} key={movie.id} />
             ))
           ) : (
-            <p
-              className="text-center text-danger"
-              style={{ fontSize: "1.2rem" }}
-            >
-              Favourit Movies is empty !
-            </p>
+            <Alert severity="info" align="left" sx={{ fontSize: "1.3rem" }}>
+              <AlertTitle sx={{ fontSize: "1.3rem" }}>Info</AlertTitle>
+              Your favourite list is empty —{" "}
+              <strong>
+                Fav some <Link to="/movies">Movies</Link> and check again{" "}
+              </strong>
+            </Alert>
           )}
         </Box>
       </div>
