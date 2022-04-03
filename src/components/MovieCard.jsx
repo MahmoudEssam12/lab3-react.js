@@ -11,7 +11,7 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import IconButton from "@mui/material/IconButton";
 import { useDispatch, useSelector } from "react-redux";
 import { setFavourit, removeFavourit } from "../store/actions/favourit";
-function MovieCard({ movie, faved }) {
+function MovieCard({ movie, faved, closeSearch }) {
   const favMovies = useSelector((state) => state.favourite.favItems);
   const dispatch = useDispatch();
 
@@ -45,7 +45,9 @@ function MovieCard({ movie, faved }) {
       </CardContent>
       <CardActions>
         <Link to={`/moviedetails/${movie.id}`}>
-          <Button size="small">Learn More</Button>
+          <Button size="small" onClick={() => closeSearch()}>
+            Learn More
+          </Button>
         </Link>
         {likedMovie ? (
           <IconButton

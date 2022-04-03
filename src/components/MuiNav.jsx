@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -9,9 +9,32 @@ import Button from "@mui/material/Button";
 import { styled, alpha } from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
+import { searchForMovie } from "../Network/productsAPI";
+import MovieCard from "../components/MovieCard";
+import Slide from "@mui/material/Slide";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 function MuiNav() {
+  const [checked, setChecked] = useState(false);
   const pages = ["home", "movies", "favourits"];
+  const [searchResults, setSearchResults] = useState([]);
+  let timer = "";
 
+  const closeSearch = () => {
+    setChecked(false);
+  };
+
+  const search = (event) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      searchForMovie(event.target.value)
+        .then((res) => {
+          setSearchResults(res.data.results);
+          setChecked(true);
+        })
+        .catch((err) => console.log(err));
+    }, 2000);
+  };
   const Search = styled("div")(({ theme }) => ({
     position: "relative",
     borderRadius: theme.shape.borderRadius,
@@ -55,60 +78,86 @@ function MuiNav() {
   }));
 
   return (
-    <AppBar position="static">
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ mr: 2, display: { xs: "none", md: "flex" } }}
-          >
-            <NavLink to="/" style={{ color: "#fff", textDecoration: "none" }}>
-              IMME
-            </NavLink>
-          </Typography>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}
-          >
-            <NavLink to="/" style={{ color: "#fff", textDecoration: "none" }}>
-              IMME
-            </NavLink>
-          </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "flex" } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                sx={{ my: 2, color: "white", display: "block" }}
-              >
-                <NavLink
-                  style={{ color: "#ccc", textDecoration: "none" }}
-                  to={`/${page}`}
-                  activeClassName="activeLink"
+    <div className="nav-wrapper">
+      <AppBar position="relative" sx={{ zIndex: 200 }}>
+        <Container maxWidth="xl">
+          <Toolbar disableGutters>
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              sx={{ mr: 2, display: { xs: "none", md: "flex" } }}
+            >
+              <NavLink to="/" style={{ color: "#fff", textDecoration: "none" }}>
+                IMME
+              </NavLink>
+            </Typography>
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}
+            >
+              <NavLink to="/" style={{ color: "#fff", textDecoration: "none" }}>
+                IMME
+              </NavLink>
+            </Typography>
+            <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "flex" } }}>
+              {pages.map((page) => (
+                <Button
+                  key={page}
+                  sx={{ my: 2, color: "white", display: "block" }}
                 >
-                  {page}
-                </NavLink>
-              </Button>
-            ))}
-          </Box>
+                  <NavLink
+                    style={{ color: "#ccc", textDecoration: "none" }}
+                    to={`/${page}`}
+                    activeClassName="activeLink"
+                  >
+                    {page}
+                  </NavLink>
+                </Button>
+              ))}
+            </Box>
 
-          <Box sx={{ flexGrow: 0 }}>
-            <Search>
-              <SearchIconWrapper>
-                <SearchIcon />
-              </SearchIconWrapper>
-              <StyledInputBase
-                placeholder="Search…"
-                inputProps={{ "aria-label": "search" }}
-              />
-            </Search>
-          </Box>
-        </Toolbar>
-      </Container>
-    </AppBar>
+            <Box sx={{ flexGrow: 0 }}>
+              <Search>
+                <SearchIconWrapper>
+                  <SearchIcon />
+                </SearchIconWrapper>
+                <StyledInputBase
+                  placeholder="Search…"
+                  onKeyUp={search}
+                  inputProps={{ "aria-label": "search" }}
+                />
+              </Search>
+            </Box>
+          </Toolbar>
+        </Container>
+      </AppBar>
+
+      <Box>
+        <Slide direction="up" in={checked} mountOnEnter unmountOnExit>
+          <div className="search-results">
+            <div className="container mt-5" style={{ position: "relative" }}>
+              <IconButton
+                aria-label="close"
+                sx={{ position: "absolute", top: "-30px", right: "-64px" }}
+                onClick={closeSearch}
+              >
+                <CloseIcon sx={{ fontSize: 40 }} />
+              </IconButton>
+              <div className="row">
+                {searchResults.map((movie) => (
+                  <div className="col-4 mb-5" key={movie.id}>
+                    <MovieCard movie={movie} closeSearch={closeSearch} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </Slide>
+      </Box>
+    </div>
   );
 }
 
